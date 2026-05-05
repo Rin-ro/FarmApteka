@@ -1,0 +1,36 @@
+﻿<Page x:Class="Apteka.MedicinesPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:Apteka"
+      mc:Ignorable="d" 
+      d:DesignHeight="335" d:DesignWidth="780"
+      Title="MedicinesPage">
+    <Grid>
+        <DataGrid x:Name="medicinesDataTable" Background="#FFCBFFFA">
+            <DataGrid.ColumnHeaderStyle>
+                <Style TargetType="DataGridColumnHeader">
+                    <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                    <Setter Property="VerticalContentAlignment" Value="Center"/>
+                    <Setter Property="Background" Value="#FF289288"/>
+                    <Setter Property="Foreground" Value="White"/>
+                    <Setter Property="BorderBrush" Value="#FF15615A"/>
+                    <Setter Property="BorderThickness" Value="2"/>
+                </Style>
+            </DataGrid.ColumnHeaderStyle>
+            <DataGrid.Columns>
+                <DataGridTextColumn  Header="Id Лекарства" Binding="{Binding Id}" FontSize="18" FontFamily="Arial" Width="*" ></DataGridTextColumn>
+                <DataGridTextColumn Header="Id Категории" Binding="{Binding CategoryId}" FontSize="18" FontFamily="Arial" Width="*"></DataGridTextColumn>
+                <DataGridTextColumn Header="Название" Binding="{Binding Name}" FontSize="18" FontFamily="Arial" Width="*"></DataGridTextColumn>
+                <DataGridTextColumn Header="Описание" Binding="{Binding Description}" FontSize="18" FontFamily="Arial" Width="*"></DataGridTextColumn>
+                <DataGridTextColumn  Header="Производитель" Binding="{Binding Fabricator}" FontSize="18" FontFamily="Arial" Width="*" ></DataGridTextColumn>
+                <DataGridTextColumn  Header="Цена" Binding="{Binding Price}" FontSize="18" FontFamily="Arial" Width="*" ></DataGridTextColumn>
+                <DataGridTextColumn  Header="Срок годности" Binding="{Binding ExpirationDate}" FontSize="18" FontFamily="Arial" Width="*" ></DataGridTextColumn>
+                <DataGridTextColumn  Header="Форма выпуска" Binding="{Binding FormOfRelease}" FontSize="18" FontFamily="Arial" Width="*" ></DataGridTextColumn>
+                <DataGridTextColumn  Header="Остаток на складе" Binding="{Binding TheRestOfTheLayout}" FontSize="18" FontFamily="Arial" Width="*" ></DataGridTextColumn>
+                <DataGridTextColumn  Header="Рецептурный" Binding="{Binding Prescription}" FontSize="18" FontFamily="Arial" Width="*" ></DataGridTextColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
+</Page>
