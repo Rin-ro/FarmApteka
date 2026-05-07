@@ -1,35 +1,52 @@
 ﻿<Window x:Class="Apteka.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Apteka"
-        mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800" Background="#FFEAFFFD"  >
+        Title="Аптека «Пилюля»" Height="500" Width="900" 
+        Background="#FFEAFFFD" WindowStyle="ToolWindow" WindowStartupLocation="CenterScreen">
     <Window.Resources>
-        <Style TargetType="Button">
+        <Style x:Key="NavButtonStyle" TargetType="Button">
             <Setter Property="Background" Value="#00DDDDDD"/>
             <Setter Property="Foreground" Value="#FF13564E"/>
             <Setter Property="BorderBrush" Value="#FF13564E"/>
             <Setter Property="BorderThickness" Value="2"/>
             <Setter Property="FontFamily" Value="Sitka Text"/>
             <Setter Property="FontSize" Value="20"/>
-            <Setter Property="Margin" Value="10"/>
+            <Setter Property="Margin" Value="25,5,5,5"/>
             <Setter Property="Width" Value="120"/>
             <Setter Property="Height" Value="60"/>
         </Style>
+        <Style x:Key="ActiveNavButtonStyle" TargetType="Button" BasedOn="{StaticResource NavButtonStyle}">
+            <Setter Property="Background" Value="#FF13564E"/>
+            <Setter Property="Foreground" Value="#FFEAFFFD"/>
+        </Style>
+        <Style x:Key="ActionBtnStyle" TargetType="Button">
+            <Setter Property="Background" Value="#FF5FCAC4"/>
+            <Setter Property="Foreground" Value="#FFD1FFF4"/>
+            <Setter Property="Width" Value="110"/>
+            <Setter Property="Height" Value="45"/>
+            <Setter Property="FontFamily" Value="Arial Black"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Margin" Value="8"/>
+        </Style>
     </Window.Resources>
     <DockPanel>
-        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" >
-            <Button Width="60" Margin="15,10,10,10" >
-                <Image Source="/Images/logo_apteka_t.png" ></Image>
+        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal">
+            <Button Style="{StaticResource NavButtonStyle}" Width="80" Margin="10,5,15,5" 
+                    Click="BtnHome_Click" ToolTip="Главная панель" Height="65">
+                <Image Source="/Images/logo_apteka_t.png" Width="50" Height="50"/>
             </Button>
-            <Button x:Name="UsersBut" Content="Клиенты" Click="UsersBut_Click"/>
-            <Button x:Name="MedicinesBut" Content="Лекарства" Click="MedicinesBut_Click"/>
-            <Button x:Name="CategoriesBut" Content="Категории" Click="CategoriesBut_Click"/>
-            <Button x:Name="OrdersBut" Content="Заказы" Click="OrdersBut_Click"/>
-            <Button x:Name="OrdersPositionsBut" Content="Позиции&#10;Заказов" Click="OrdersPositionsBut_Click"/>
+            <Button x:Name="UsersBtn" Content="Клиенты" Style="{StaticResource NavButtonStyle}" Click="NavBtn_Click" Tag="Users"/>
+            <Button x:Name="MedicinesBtn" Content="Лекарства" Style="{StaticResource NavButtonStyle}" Click="NavBtn_Click" Tag="Medicines"/>
+            <Button x:Name="CategoriesBtn" Content="Категории" Style="{StaticResource NavButtonStyle}" Click="NavBtn_Click" Tag="Categories"/>
+            <Button x:Name="OrdersBtn" Content="Заказы" Style="{StaticResource NavButtonStyle}" Click="NavBtn_Click" Tag="Orders"/>
+            <Button x:Name="OrderItemsBtn" Content="Позиции&#10;Заказов" Style="{StaticResource NavButtonStyle}" Click="NavBtn_Click" Tag="OrderItems"/>
         </StackPanel>
-        <Frame x:Name="MainFrame" NavigationUIVisibility="Hidden" Navigated="MainFrame_Navigated" Margin="10" Foreground="#FF13564E" BorderBrush="#FF13564E" BorderThickness="2" Height="335"></Frame>
+        
+        <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,10" Height="70">
+            <Button x:Name="BtnAdd" Content="Добавить" Style="{StaticResource NavButtonStyle}" Click="BtnAdd_Click"/>
+            <Button x:Name="BtnEdit" Content="Изменить" Style="{StaticResource NavButtonStyle}" Click="BtnEdit_Click"/>
+            <Button x:Name="BtnDelete" Content="Удалить" Style="{StaticResource NavButtonStyle}" Click="BtnDelete_Click"/>
+        </StackPanel>
+        <Frame x:Name="MainFrame" NavigationUIVisibility="Hidden" Margin="10,0,10,0" Foreground="#FF13564E" BorderBrush="#FF13564E" BorderThickness="2" Height="300"></Frame>
     </DockPanel>
 </Window>

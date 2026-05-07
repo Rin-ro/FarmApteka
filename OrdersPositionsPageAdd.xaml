@@ -1,0 +1,59 @@
+﻿<Window  x:Class="Apteka.OrdersPositionsPageAdd"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:Apteka"
+      mc:Ignorable="d" 
+      Height="400" Width="600" Background="#FF0B5B4F" WindowStyle="ToolWindow" WindowStartupLocation="CenterScreen" BorderBrush="White" BorderThickness="10"
+      Title="OrdersPositionsPage">
+    <Window.Resources>
+        <Style TargetType="Button">
+            <Setter Property="Background" Value="#FF5FCAC4"/>
+            <Setter Property="Foreground" Value="#FFD1FFF4"/>
+            <Setter Property="Width" Value="100"/>
+            <Setter Property="Height" Value="40"/>
+            <Setter Property="FontFamily" Value="Arial Black"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Margin" Value="20"/>
+        </Style>
+        <Style TargetType="TextBlock">
+            <Setter Property="Foreground" Value="#FFCFFFF4"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="FontFamily" Value="Arial Black"/>
+            <Setter Property="Margin" Value="20,0,0,0"/>
+        </Style>
+        <Style TargetType="TextBox">
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Background" Value="#FF0B5B4F"/>
+            <Setter Property="FontFamily" Value="Arial"/>
+            <Setter Property="BorderBrush" Value="#FFB2FFFD"/>
+            <Setter Property="Margin" Value="20,2,20,8"/>
+        </Style>
+    </Window.Resources>
+    <StackPanel Orientation="Vertical" VerticalAlignment="Center">
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="10,0,10,0">
+            <Image Source="/Images/logo_apteka.png" Width="70" Height="70" HorizontalAlignment="Center" Margin="0,0,-100,0" />
+            <StackPanel Orientation="Vertical" Margin="-5,5,-30,10" Width="376">
+                <TextBlock Text="Позиция" FontSize="40" HorizontalAlignment="Center" Height="90" VerticalAlignment="Center" Padding="0,25,0,0" Margin="100,0,0,0"/>
+            </StackPanel>
+        </StackPanel>
+
+        <TextBlock Text="ID заказа:" Margin="20,-10,0,0"/>
+        <TextBox x:Name="OrderTB" Foreground="#FFD1FFF4" MaxLength="10" />
+
+        <TextBlock Text="ID лекарства:"/>
+        <TextBox x:Name="MedicineTB" Foreground="#FFD1FFF4" MaxLength="10" />
+
+        <TextBlock Text="Количество:"/>
+        <TextBox x:Name="QuantityTB" Foreground="#FFD1FFF4" MaxLength="10" />
+
+        <TextBlock Text="Цена за единицу:"/>
+        <TextBox x:Name="PriceTB" Foreground="#FFD1FFF4" MaxLength="10" />
+
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+            <Button Content="Добавить" Click="Button_Click" />
+            <Button x:Name="RegBtn"  Content="Выйти" Click="RegBtn_Click"/>
+        </StackPanel>
+    </StackPanel>
+</Window>

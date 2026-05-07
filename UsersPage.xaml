@@ -24,12 +24,12 @@
                 <DataGridTextColumn Header="Имя" Binding="{Binding first_name}" FontSize="14" FontFamily="Arial" Width="2*"/>
                 <DataGridTextColumn Header="Фамилия" Binding="{Binding last_name}" FontSize="14" FontFamily="Arial" Width="2*"/>
                 <DataGridTextColumn Header="Телефон" Binding="{Binding phone}" FontSize="14" FontFamily="Arial" Width="2*"/>
-                <!--<DataGridTextColumn  Header="Id Клиента" Binding="{Binding Id}" FontSize="18" FontFamily="Arial" Width="*" ></DataGridTextColumn>
+                <DataGridTextColumn  Header="Id Клиента" Binding="{Binding Id}" FontSize="18" FontFamily="Arial" Width="*" ></DataGridTextColumn>
                 <DataGridTextColumn Header="Логин" Binding="{Binding Login}" FontSize="18" FontFamily="Arial" Width="*"></DataGridTextColumn>
                 <DataGridTextColumn Header="Пароль" Binding="{Binding PasswordHash}" FontSize="18" FontFamily="Arial" Width="*"></DataGridTextColumn>
-                <DataGridTextColumn Header="Email или телефон" Binding="{Binding EmailOrPhone}" FontSize="18" FontFamily="Arial" Width="*"></DataGridTextColumn>-->
-                <!--<DataGridTextColumn  Header="ФИО" Binding="{Binding FIO}" FontSize="18" FontFamily="Arial" Width="*" ></DataGridTextColumn>
-                <DataGridTextColumn  Header="Дата создания" Binding="{Binding DateOfCreate}" FontSize="18" FontFamily="Arial" Width="*" ></DataGridTextColumn>-->
+                <DataGridTextColumn Header="Email или телефон" Binding="{Binding EmailOrPhone}" FontSize="18" FontFamily="Arial" Width="*"></DataGridTextColumn>
+                <DataGridTextColumn  Header="ФИО" Binding="{Binding FIO}" FontSize="18" FontFamily="Arial" Width="*" ></DataGridTextColumn>
+                <DataGridTextColumn  Header="Дата создания" Binding="{Binding DateOfCreate}" FontSize="18" FontFamily="Arial" Width="*" ></DataGridTextColumn>
             </DataGrid.Columns>
         </DataGrid>
     </Grid>

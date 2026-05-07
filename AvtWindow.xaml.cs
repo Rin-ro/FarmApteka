@@ -19,6 +19,8 @@ namespace Apteka
     /// </summary>
     public partial class AvtWindow : Window
     {
+        string pass = "123";
+        string log = "sa";
         public AvtWindow()
         {
             InitializeComponent();
@@ -26,8 +28,29 @@ namespace Apteka
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            var editWindow = new MainWindow();
-            editWindow.ShowDialog();
+            string login = LogTB.Text;
+            string password = PassTB.Password;
+
+            if (string.IsNullOrWhiteSpace(login) || string.IsNullOrWhiteSpace(password))
+            {
+                MessageBox.Show("Заполните все поля!", "Ошибка",
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+            else if (login == log && password == pass)
+            {
+
+                var editWindow = new MainWindow();
+                this.Close();
+
+                editWindow.ShowDialog();
+            }
+            else MessageBox.Show("Ошибка входа", "Введены неверные данные!", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+
+        private void RegBtn_Click(object sender, RoutedEventArgs e)
+        {
+            Close();
         }
     }
 }

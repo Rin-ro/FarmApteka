@@ -58,17 +58,38 @@
     <Compile Include="AvtWindow.xaml.cs">
       <DependentUpon>AvtWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="CategoriesPageAdd.xaml.cs">
+      <DependentUpon>CategoriesPageAdd.xaml</DependentUpon>
+    </Compile>
     <Compile Include="CategoriesPage.xaml.cs">
       <DependentUpon>CategoriesPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="MedicinesPageAdd.xaml.cs">
+      <DependentUpon>MedicinesPageAdd.xaml</DependentUpon>
     </Compile>
     <Compile Include="MedicinesPage.xaml.cs">
       <DependentUpon>MedicinesPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="NotificationsPage.xaml.cs">
+      <DependentUpon>NotificationsPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="NotificationsPageAdd.xaml.cs">
+      <DependentUpon>NotificationsPageAdd.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="OrdersPageAdd.xaml.cs">
+      <DependentUpon>OrdersPageAdd.xaml</DependentUpon>
+    </Compile>
     <Compile Include="OrdersPage.xaml.cs">
       <DependentUpon>OrdersPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="OrdersPositionsPageAdd.xaml.cs">
+      <DependentUpon>OrdersPositionsPageAdd.xaml</DependentUpon>
+    </Compile>
     <Compile Include="OrdersPositionsPage.xaml.cs">
       <DependentUpon>OrdersPositionsPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UsersPageAdd.xaml.cs">
+      <DependentUpon>UsersPageAdd.xaml</DependentUpon>
     </Compile>
     <Compile Include="UsersPage.xaml.cs">
       <DependentUpon>UsersPage.xaml</DependentUpon>
@@ -76,6 +97,10 @@
     <Page Include="AvtWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="CategoriesPageAdd.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="CategoriesPage.xaml">
       <SubType>Designer</SubType>
@@ -93,17 +118,41 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="MedicinesPageAdd.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="MedicinesPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="NotificationsPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="NotificationsPageAdd.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="OrdersPageAdd.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="OrdersPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="OrdersPositionsPageAdd.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="OrdersPositionsPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UsersPageAdd.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="UsersPage.xaml">
       <SubType>Designer</SubType>
