@@ -40,6 +40,7 @@
             <Button x:Name="CategoriesBtn" Content="Категории" Style="{StaticResource NavButtonStyle}" Click="NavBtn_Click" Tag="Categories"/>
             <Button x:Name="OrdersBtn" Content="Заказы" Style="{StaticResource NavButtonStyle}" Click="NavBtn_Click" Tag="Orders"/>
             <Button x:Name="OrderItemsBtn" Content="Позиции&#10;Заказов" Style="{StaticResource NavButtonStyle}" Click="NavBtn_Click" Tag="OrderItems"/>
+            
         </StackPanel>
         
         <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,10" Height="70">

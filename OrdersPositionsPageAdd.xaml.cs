@@ -27,12 +27,12 @@ namespace Apteka
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            this.Close();
+            DialogResult = true;
         }
 
         private void RegBtn_Click(object sender, RoutedEventArgs e)
         {
-            this.Close();
+            DialogResult = false;
         }
     }
 }

@@ -1,40 +1,36 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.SqlClient;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using System.Collections.ObjectModel;
+using AptekaLib;
+using Apteka.Services;
 
 namespace Apteka
 {
-    /// <summary>
-    /// Логика взаимодействия для UsersPage.xaml
-    /// </summary>
     public partial class UsersPage : Page
     {
-        //private string connectionString = @"Server=computer\sqlexpress;Database=Apteka;Trusted_Connection=True;";
-        private string connectionString = @"Server=localhost;Database=Apteka;Trusted_Connection=True;";
+        private readonly ApiService _api = App.Api;
+        public ObservableCollection<User> Users { get; } = new();
+
         public UsersPage()
         {
             InitializeComponent();
-            DataTable dataTable = new DataTable();
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            DataContext = this;
+            LoadUsers();
+        }
+
+        private async void LoadUsers()
+        {
+            try
             {
-                string query = "select * from customers";
-                SqlDataAdapter adapter = new SqlDataAdapter(query, connection);
-                adapter.Fill(dataTable);
+                var users = await _api.GetUsersAsync();
+                Users.Clear();
+                foreach (var user in users)
+                    Users.Add(user);
             }
-            usersDataTable.ItemsSource = dataTable.DefaultView;
+            catch (System.Exception ex)
+            {
+                MessageBox.Show($"Ошибка загрузки: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
     }
 }

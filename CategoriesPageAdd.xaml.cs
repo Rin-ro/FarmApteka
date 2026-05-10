@@ -1,42 +1,67 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.SqlClient;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+﻿using System.Windows;
+using AptekaLib;
+using Apteka.Services;
 
 namespace Apteka
 {
-    /// <summary>
-    /// Логика взаимодействия для CategoriesPage.xaml
-    /// </summary>
     public partial class CategoriesPageAdd : Window
     {
+        private readonly ApiService _api = App.Api;
+        public Category? EditedCategory { get; private set; }
+
         public CategoriesPageAdd()
         {
             InitializeComponent();
-
-           
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        public CategoriesPageAdd(Category category) : this()
         {
-            this.Close();
+            EditedCategory = category;
+            NameTB.Text = category.Name;
+        }
+
+        private async void Button_Click(object sender, RoutedEventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(NameTB.Text))
+            {
+                MessageBox.Show("Введите название категории", "Ошибка");
+                return;
+            }
+
+            try
+            {
+                bool success;
+
+                if (EditedCategory == null)
+                {
+                    // Создание новой категории
+                    var newCategory = new Category
+                    {
+                        Name = NameTB.Text.Trim()
+                    };
+                    success = await _api.AddCategoryAsync(newCategory);
+                }
+                else
+                {
+                    // Обновление существующей
+                    EditedCategory.Name = NameTB.Text.Trim();
+                    success = await _api.UpdateCategoryAsync(EditedCategory);
+                }
+
+                if (success)
+                    DialogResult = true;
+                else
+                    MessageBox.Show("Ошибка при сохранении категории", "Ошибка");
+            }
+            catch (System.Exception ex)
+            {
+                MessageBox.Show($"Ошибка: {ex.Message}");
+            }
         }
 
         private void RegBtn_Click(object sender, RoutedEventArgs e)
         {
-            this.Close();
+            DialogResult = false;
         }
     }
 }

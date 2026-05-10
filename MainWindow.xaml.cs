@@ -1,21 +1,24 @@
-﻿using System;
+﻿using Apteka.Services;
+using System;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media;
+
 namespace Apteka
 {
     public partial class MainWindow : Window
     {
         private Button[] _navButtons;
+
         public MainWindow()
         {
             InitializeComponent();
-            Loaded += async (s, e) =>
-            {
-                var result = await App.Api.TestConnectionAsync();
-                System.Windows.MessageBox.Show(result, "Тест API");
-            };
+
+            // 🔹 ИНИЦИАЛИЗАЦИЯ МАССИВА КНОПОК
+            _navButtons = new[] { UsersBtn, MedicinesBtn, CategoriesBtn, OrdersBtn, OrderItemsBtn };
+
+            NavigateToPage("Medicines");
         }
+
         private void NavBtn_Click(object sender, RoutedEventArgs e)
         {
             if (sender is Button btn && btn.Tag is string pageTag)
@@ -23,16 +26,21 @@ namespace Apteka
                 NavigateToPage(pageTag);
             }
         }
+
         private void BtnHome_Click(object sender, RoutedEventArgs e)
         {
-            NavigateToPage("Users");
+            NavigateToPage("Medicines");
         }
+
         private void NavigateToPage(string pageTag)
         {
+            // Сброс стилей всех кнопок
             foreach (var btn in _navButtons)
             {
                 btn.Style = (Style)FindResource("NavButtonStyle");
             }
+
+            // Переход на страницу и подсветка кнопки
             switch (pageTag)
             {
                 case "Users":
@@ -56,50 +64,46 @@ namespace Apteka
                     OrderItemsBtn.Style = (Style)FindResource("ActiveNavButtonStyle");
                     break;
             }
-            this.Title = $"Аптека «Пилюля» — {pageTag}";
+
+            Title = $"Аптека «Пилюля» — {pageTag}";
         }
+
         private void BtnAdd_Click(object sender, RoutedEventArgs e)
         {
-            Window addWindow = null;
-            if (MainFrame.Content is UsersPage)
-                addWindow = new UsersPageAdd();
-            else if (MainFrame.Content is MedicinesPage)
-                addWindow = new MedicinesPageAdd();
-            else if (MainFrame.Content is CategoriesPage)
-                addWindow = new CategoriesPageAdd();
-            else if (MainFrame.Content is OrdersPage)
-                addWindow = new OrdersPageAdd();
-            else if (MainFrame.Content is OrdersPositionsPage)
-                addWindow = new OrdersPositionsPageAdd();
-            else
+            Window? addWindow = MainFrame.Content switch
             {
-                MessageBox.Show("Выберите раздел для добавления записи", "Внимание",
-                    MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
-            if (addWindow.ShowDialog() == true)
+                UsersPage => new UsersPageAdd(),
+                MedicinesPage => new MedicinesPageAdd(),
+                CategoriesPage => new CategoriesPageAdd(),
+                OrdersPage => new OrdersPageAdd(),
+                OrdersPositionsPage => new OrdersPositionsPageAdd(),
+                _ => null
+            };
+
+            if (addWindow?.ShowDialog() == true)
             {
                 RefreshCurrentPage();
-                MessageBox.Show("Запись добавлена!", "Успех",
-                    MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("Запись добавлена!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }
+
         private void BtnEdit_Click(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("Выберите запись в таблице для редактирования", "Инфо",
-                MessageBoxButton.OK, MessageBoxImage.Information);
+            MessageBox.Show("Выберите запись для редактирования", "Инфо", MessageBoxButton.OK, MessageBoxImage.Information);
         }
+
         private void BtnDelete_Click(object sender, RoutedEventArgs e)
         {
             var result = MessageBox.Show("Удалить выбранную запись?", "Подтверждение",
                 MessageBoxButton.YesNo, MessageBoxImage.Question);
+
             if (result == MessageBoxResult.Yes)
             {
                 RefreshCurrentPage();
-                MessageBox.Show("Запись удалена", "Готово",
-                    MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("Запись удалена", "Готово", MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }
+
         private void RefreshCurrentPage()
         {
             if (MainFrame.Content is Page currentPage)

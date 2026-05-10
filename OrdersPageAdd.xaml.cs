@@ -1,38 +1,60 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Apteka.Services;
+using AptekaLib;
+using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace Apteka
 {
-    /// <summary>
-    /// Логика взаимодействия для OrdersPage.xaml
-    /// </summary>
     public partial class OrdersPageAdd : Window
     {
+        private readonly ApiService _api = App.Api;
+        public ObservableCollection<OrderItemRequest> Items { get; } = new();
+
         public OrdersPageAdd()
         {
             InitializeComponent();
+            DataContext = this;
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private async void Button_Click(object sender, RoutedEventArgs e)
         {
-            this.Close();
+            if (App.CurrentUser == null || Items.Count == 0)
+            {
+                MessageBox.Show("Добавьте товары в заказ", "Ошибка");
+                return;
+            }
+
+            try
+            {
+                var request = new CreateOrderRequest
+                {
+                    UserId = App.CurrentUser.Id,
+                    PaymentMethod = "Наличные", // Или из ComboBox
+                    DeliveryMethod = "Самовывоз",
+                    Items = Items.ToList()
+                };
+
+                var order = await _api.CreateOrderAsync(request);
+                if (order != null)
+                    DialogResult = true;
+                else
+                    MessageBox.Show("Ошибка при создании заказа", "Ошибка");
+            }
+            catch (System.Exception ex)
+            {
+                MessageBox.Show($"Ошибка: {ex.Message}");
+            }
         }
 
         private void RegBtn_Click(object sender, RoutedEventArgs e)
         {
-            this.Close();
+            DialogResult = false;
+        }
+
+        private void BtnAddItem_Click(object sender, RoutedEventArgs e)
+        {
+            // Открыть окно выбора лекарства
         }
     }
 }

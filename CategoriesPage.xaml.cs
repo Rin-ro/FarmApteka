@@ -1,32 +1,36 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.SqlClient;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using System.Collections.ObjectModel;
+using AptekaLib;
+using Apteka.Services;
 
 namespace Apteka
 {
-    /// <summary>
-    /// Логика взаимодействия для CategoriesPage.xaml
-    /// </summary>
     public partial class CategoriesPage : Page
     {
+        private readonly ApiService _api = App.Api;
+        public ObservableCollection<Category> Categories { get; } = new();
+
         public CategoriesPage()
         {
             InitializeComponent();
+            DataContext = this;
+            LoadCategories();
+        }
 
-           
+        private async void LoadCategories()
+        {
+            try
+            {
+                var list = await _api.GetCategoriesAsync();
+                Categories.Clear();
+                foreach (var c in list)
+                    Categories.Add(c);
+            }
+            catch (System.Exception ex)
+            {
+                MessageBox.Show($"Ошибка: {ex.Message}");
+            }
         }
     }
 }

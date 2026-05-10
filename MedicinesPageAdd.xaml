@@ -72,7 +72,7 @@
             <TextBox x:Name="StockTB" Foreground="#FFD1FFF4" MaxLength="10" />
 
             <TextBlock Text="Рецептурный (0/1):"/>
-            <TextBox x:Name="PrescriptionTB" Foreground="#FFD1FFF4" MaxLength="1" />
+            <CheckBox x:Name="PrescriptionTB" Foreground="#FFD1FFF4" />
 
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                 <Button Content="Добавить" Click="Button_Click" />
