@@ -1,5 +1,0 @@
-<Solution>
-  <Project Path="../AptekaLib/AptekaLib.csproj" Id="9ab1c3cb-35f9-41b8-8324-fca6abfc3ad4" />
-  <Project Path="../PharmaApteka.Api/PharmaApteka.Api.csproj" Id="04882793-e837-430f-b0ad-c209c497a1b7" />
-  <Project Path="Apteka.csproj" Id="a12c5677-3b3f-41ac-ac1f-b80d09582c43" />
-</Solution>

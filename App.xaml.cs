@@ -1,17 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
+using Apteka.Services;
 
 namespace Apteka
 {
-    /// <summary>
-    /// Логика взаимодействия для App.xaml
-    /// </summary>
     public partial class App : Application
     {
+        public static ApiService Api { get; } = new ApiService();
+        public static AptekaLib.User? CurrentUser { get; set; }
+
+        protected override void OnStartup(StartupEventArgs e)
+        {
+            base.OnStartup(e);
+            // Для теста сразу показываем главное окно
+            new MainWindow().Show();
+        }
     }
 }

@@ -10,8 +10,11 @@ namespace Apteka
         public MainWindow()
         {
             InitializeComponent();
-            _navButtons = new[] { UsersBtn, MedicinesBtn, CategoriesBtn, OrdersBtn, OrderItemsBtn };
-            NavigateToPage("Users");
+            Loaded += async (s, e) =>
+            {
+                var result = await App.Api.TestConnectionAsync();
+                System.Windows.MessageBox.Show(result, "Тест API");
+            };
         }
         private void NavBtn_Click(object sender, RoutedEventArgs e)
         {
