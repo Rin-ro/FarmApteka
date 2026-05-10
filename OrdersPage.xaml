@@ -8,7 +8,7 @@
       d:DesignHeight="335" d:DesignWidth="780"
       Title="OrdersPage">
     <Grid>
-        <DataGrid x:Name="ordersDataTable" Background="#FFCBFFFA">
+        <DataGrid x:Name="ordersDataTable" ItemsSource="{Binding Orders}" AutoGenerateColumns="False" Background="#FFCBFFFA">
             <DataGrid.ColumnHeaderStyle>
                 <Style TargetType="DataGridColumnHeader">
                     <Setter Property="HorizontalContentAlignment" Value="Center"/>
@@ -20,14 +20,14 @@
                 </Style>
             </DataGrid.ColumnHeaderStyle>
             <DataGrid.Columns>
-                <DataGridTextColumn  Header="Id Заказа" Binding="{Binding Id}" FontSize="18" FontFamily="Arial" Width="*" ></DataGridTextColumn>
-                <DataGridTextColumn Header="Id Клиента" Binding="{Binding UserId}" FontSize="18" FontFamily="Arial" Width="*"></DataGridTextColumn>
-                <DataGridTextColumn Header="Статус" Binding="{Binding Status}" FontSize="18" FontFamily="Arial" Width="*"></DataGridTextColumn>
-                <DataGridTextColumn Header="Метод оплаты" Binding="{Binding PaymentMethod}" FontSize="18" FontFamily="Arial" Width="*"></DataGridTextColumn>
-                <DataGridTextColumn  Header="Метод доставки" Binding="{Binding DeliveryMethod}" FontSize="18" FontFamily="Arial" Width="*" ></DataGridTextColumn>
-                <DataGridTextColumn  Header="Итоговая сумма" Binding="{Binding Sum}" FontSize="18" FontFamily="Arial" Width="*" ></DataGridTextColumn>
-                <DataGridTextColumn  Header="Дата заказа" Binding="{Binding DateOfOrder}" FontSize="18" FontFamily="Arial" Width="*" ></DataGridTextColumn>
-                <DataGridTextColumn  Header="Дата доставки" Binding="{Binding DateOfDelivery}" FontSize="18" FontFamily="Arial" Width="*" ></DataGridTextColumn>
+                <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="*"/>
+                <DataGridTextColumn Header="Пользователь" Binding="{Binding UserId}" Width="*"/>
+                <DataGridTextColumn Header="Статус" Binding="{Binding Status}" Width="*"/>
+                <DataGridTextColumn Header="Оплата" Binding="{Binding PaymentMethod}" Width="*"/>
+                <DataGridTextColumn Header="Доставка" Binding="{Binding DeliveryMethod}" Width="*"/>
+                <DataGridTextColumn Header="Сумма" Binding="{Binding Sum}" Width="*"/>
+                <DataGridTextColumn Header="Дата заказа" Binding="{Binding DateOfOrder, StringFormat={}{0:dd.MM.yyyy HH:mm}}" Width="*"/>
+                <DataGridTextColumn Header="Дата доставки" Binding="{Binding DeliveryDate, StringFormat={}{0:dd.MM.yyyy}}" Width="*"/>
             </DataGrid.Columns>
         </DataGrid>
     </Grid>

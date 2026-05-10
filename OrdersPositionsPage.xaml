@@ -8,7 +8,7 @@
       d:DesignHeight="335" d:DesignWidth="780"
       Title="OrdersPositionsPage">
     <Grid>
-        <DataGrid x:Name="ordersDataTable" Background="#FFCBFFFA">
+        <DataGrid x:Name="ordersDataTable" ItemsSource="{Binding Positions}" AutoGenerateColumns="False" Background="#FFCBFFFA">
             <DataGrid.ColumnHeaderStyle>
                 <Style TargetType="DataGridColumnHeader">
                     <Setter Property="HorizontalContentAlignment" Value="Center"/>
@@ -20,11 +20,11 @@
                 </Style>
             </DataGrid.ColumnHeaderStyle>
             <DataGrid.Columns>
-                <DataGridTextColumn  Header="Id Позиции заказа" Binding="{Binding Id}" FontSize="18" FontFamily="Arial" Width="*" ></DataGridTextColumn>
-                <DataGridTextColumn Header="Id Заказа" Binding="{Binding OrderId}" FontSize="18" FontFamily="Arial" Width="*"></DataGridTextColumn>
-                <DataGridTextColumn Header="Id Лекарства" Binding="{Binding MedicineId}" FontSize="18" FontFamily="Arial" Width="*"></DataGridTextColumn>
-                <DataGridTextColumn Header="Цена за единицу" Binding="{Binding UnitPrice}" FontSize="18" FontFamily="Arial" Width="*"></DataGridTextColumn>
-                <DataGridTextColumn  Header="Количество" Binding="{Binding Quantity}" FontSize="18" FontFamily="Arial" Width="*" ></DataGridTextColumn>
+                <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="*"/>
+                <DataGridTextColumn Header="Заказ ID" Binding="{Binding OrderId}" Width="*"/>
+                <DataGridTextColumn Header="Лекарство ID" Binding="{Binding MedicineId}" Width="*"/>
+                <DataGridTextColumn Header="Цена" Binding="{Binding UnitPrice}" Width="*"/>
+                <DataGridTextColumn Header="Кол-во" Binding="{Binding Quantity}" Width="*"/>
             </DataGrid.Columns>
         </DataGrid>
     </Grid>

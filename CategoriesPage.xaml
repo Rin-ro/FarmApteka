@@ -8,7 +8,7 @@
       d:DesignHeight="335" d:DesignWidth="780"
       Title="CategoriesPage">
     <Grid>
-        <DataGrid x:Name="categoriesDataTable" Background="#FFCBFFFA">
+        <DataGrid x:Name="categoriesDataTable" ItemsSource="{Binding Categories}" AutoGenerateColumns="False" Background="#FFCBFFFA">
             <DataGrid.ColumnHeaderStyle>
                 <Style TargetType="DataGridColumnHeader">
                     <Setter Property="HorizontalContentAlignment" Value="Center"/>

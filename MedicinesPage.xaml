@@ -8,7 +8,7 @@
       d:DesignHeight="335" d:DesignWidth="780"
       Title="MedicinesPage">
     <Grid>
-        <DataGrid x:Name="medicinesDataTable" Background="#FFCBFFFA">
+        <DataGrid x:Name="medicinesDataTable" ItemsSource="{Binding Medicines}" AutoGenerateColumns="False" Background="#FFCBFFFA">
             <DataGrid.ColumnHeaderStyle>
                 <Style TargetType="DataGridColumnHeader">
                     <Setter Property="HorizontalContentAlignment" Value="Center"/>

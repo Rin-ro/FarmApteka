@@ -11,8 +11,6 @@ namespace Apteka
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
-            // Для теста сразу показываем главное окно
-            new MainWindow().Show();
         }
     }
 }

@@ -1,8 +1,9 @@
-﻿using System.Windows;
-using System.Windows.Controls;
-using System.Collections.ObjectModel;
+﻿using Apteka.Services;
 using AptekaLib;
-using Apteka.Services;
+using System;
+using System.Collections.ObjectModel;
+using System.Windows;
+using System.Windows.Controls;
 
 namespace Apteka
 {
@@ -22,15 +23,14 @@ namespace Apteka
         {
             try
             {
-                var users = await _api.GetUsersAsync();
+                var list = await _api.GetUsersAsync();
                 Users.Clear();
-                foreach (var user in users)
-                    Users.Add(user);
+                foreach (var u in list) Users.Add(u);
             }
-            catch (System.Exception ex)
-            {
-                MessageBox.Show($"Ошибка загрузки: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
+            catch (Exception ex) { MessageBox.Show($"Ошибка: {ex.Message}"); }
         }
+
+        public object? GetSelectedItem() => usersDataTable.SelectedItem;
+        public void Refresh() => LoadUsers();
     }
 }

@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Apteka.Services;
+using AptekaLib;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -19,19 +21,48 @@ namespace Apteka
     /// </summary>
     public partial class NotificationsPageAdd : Window
     {
+        private readonly ApiService _api = App.Api;
+        public Notification? EditedNotification { get; private set; }
+
         public NotificationsPageAdd()
         {
             InitializeComponent();
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        public NotificationsPageAdd(Notification notification) : this()
         {
-            Close();
+            EditedNotification = notification;
+            UserIdTB.Text = notification.UserId.ToString();
+            MessageTB.Text = notification.Message;
+            IsReadTB.Text = notification.IsRead ? "1" : "0";
         }
 
-        private void RegBtn_Click(object sender, RoutedEventArgs e)
+        private async void Button_Click(object sender, RoutedEventArgs e)
         {
-            Close();
+            if (!int.TryParse(UserIdTB.Text, out var userId))
+            {
+                MessageBox.Show("ID пользователя должен быть числом"); return;
+            }
+
+            var isRead = IsReadTB.Text == "1";
+            var notif = new Notification
+            {
+                UserId = userId,
+                Message = MessageTB.Text.Trim(),
+                IsRead = isRead,
+                CreatedDate = EditedNotification?.CreatedDate ?? DateTime.Now
+            };
+
+            if (EditedNotification != null) notif.Id = EditedNotification.Id;
+
+            bool success = EditedNotification == null
+                ? await _api.AddNotificationAsync(notif)
+                : await _api.UpdateNotificationAsync(notif);
+
+            if (success) DialogResult = true;
+            else MessageBox.Show("Ошибка сохранения");
         }
+
+        private void RegBtn_Click(object sender, RoutedEventArgs e) => DialogResult = false;
     }
 }

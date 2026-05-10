@@ -8,7 +8,7 @@
       d:DesignHeight="335" d:DesignWidth="780"
       Title="NotificationsPage">
     <Grid>
-        <DataGrid x:Name="notificationsDataTable" Background="#FFCBFFFA">
+        <DataGrid x:Name="notificationsDataTable" ItemsSource="{Binding Notifications}" AutoGenerateColumns="False" Background="#FFCBFFFA">
             <DataGrid.ColumnHeaderStyle>
                 <Style TargetType="DataGridColumnHeader">
                     <Setter Property="HorizontalContentAlignment" Value="Center"/>
@@ -20,11 +20,11 @@
                 </Style>
             </DataGrid.ColumnHeaderStyle>
             <DataGrid.Columns>
-                <DataGridTextColumn  Header="ID" Binding="{Binding Id}" FontSize="18" FontFamily="Arial" Width="*" ></DataGridTextColumn>
-                <DataGridTextColumn Header="ID пользователя" Binding="{Binding UserId}" FontSize="18" FontFamily="Arial" Width="*"></DataGridTextColumn>
-                <DataGridTextColumn Header="Сообщение" Binding="{Binding Message}" FontSize="18" FontFamily="Arial" Width="2*"></DataGridTextColumn>
-                <DataGridTextColumn  Header="Дата создания" Binding="{Binding CreatedDate, StringFormat={}{0:dd.MM.yyyy HH:mm}}" FontSize="18" FontFamily="Arial" Width="*" ></DataGridTextColumn>
-                <DataGridTextColumn  Header="Прочитано" Binding="{Binding IsRead}" FontSize="18" FontFamily="Arial" Width="*"></DataGridTextColumn>
+                <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="*"/>
+                <DataGridTextColumn Header="Пользователь" Binding="{Binding UserId}" Width="*"/>
+                <DataGridTextColumn Header="Сообщение" Binding="{Binding Message}" Width="2*"/>
+                <DataGridTextColumn Header="Дата" Binding="{Binding CreatedDate, StringFormat={}{0:dd.MM.yyyy HH:mm}}" Width="*"/>
+                <DataGridTextColumn Header="Прочитано" Binding="{Binding IsRead}" Width="*"/>
             </DataGrid.Columns>
         </DataGrid>
     </Grid>

@@ -17,14 +17,56 @@ namespace Apteka.Services
         public ApiService()
         {
             _baseUrl = ConfigurationManager.AppSettings["ApiBaseUrl"] ?? "http://localhost:5000/api";
-            _http = new HttpClient { BaseAddress = new System.Uri(_baseUrl) };
+            _http = new HttpClient { BaseAddress = new Uri(_baseUrl) };
             _http.DefaultRequestHeaders.Add("Accept", "application/json");
         }
 
         // ==========================================
         // 🔐 АВТОРИЗАЦИЯ
         // ==========================================
+        public async Task<List<OrderPosition>> GetOrderPositionsAsync()
+        {
+            try { return await _http.GetFromJsonAsync<List<OrderPosition>>("orderpositions") ?? new(); }
+            catch { return new(); }
+        }
 
+        public async Task<bool> AddOrderPositionAsync(OrderPosition pos)
+        {
+            try { var resp = await _http.PostAsJsonAsync("orderpositions", pos); return resp.IsSuccessStatusCode; }
+            catch { return false; }
+        }
+
+        public async Task<bool> UpdateOrderPositionAsync(OrderPosition pos)
+        {
+            try { var resp = await _http.PutAsJsonAsync($"orderpositions/{pos.Id}", pos); return resp.IsSuccessStatusCode; }
+            catch { return false; }
+        }
+
+        public async Task<bool> DeleteOrderPositionAsync(int id)
+        {
+            try { var resp = await _http.DeleteAsync($"orderpositions/{id}"); return resp.IsSuccessStatusCode; }
+            catch { return false; }
+        }
+
+        // УВЕДОМЛЕНИЯ (добавление/обновление)
+        public async Task<bool> AddNotificationAsync(Notification notif)
+        {
+            try { var resp = await _http.PostAsJsonAsync("notifications", notif); return resp.IsSuccessStatusCode; }
+            catch { return false; }
+        }
+
+        public async Task<bool> UpdateNotificationAsync(Notification notif)
+        {
+            try { var resp = await _http.PutAsJsonAsync($"notifications/{notif.Id}", notif); return resp.IsSuccessStatusCode; }
+            catch { return false; }
+        }
+
+        // ВСЕ ЗАКАЗЫ (для администратора)
+        public async Task<List<Order>> GetAllOrdersAsync()
+        {
+            try { return await _http.GetFromJsonAsync<List<Order>>("orders") ?? new(); }
+            catch { return new(); }
+        }
         public async Task<AuthResult?> LoginAsync(string login, string password)
         {
             try
@@ -333,6 +375,7 @@ namespace Apteka.Services
             }
             catch { return false; }
         }
+
     }
 
     // ==========================================
