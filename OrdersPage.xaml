@@ -5,7 +5,7 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:Apteka"
       mc:Ignorable="d" 
-      d:DesignHeight="335" d:DesignWidth="780"
+      d:DesignHeight="335" d:DesignWidth="800"
       Title="OrdersPage">
     <Grid>
         <DataGrid x:Name="ordersDataTable" ItemsSource="{Binding Orders}" AutoGenerateColumns="False" Background="#FFCBFFFA">

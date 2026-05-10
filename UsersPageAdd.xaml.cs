@@ -1,7 +1,7 @@
-﻿using Apteka.Services;
-using AptekaLib;
-using System;
+﻿using System;
 using System.Windows;
+using AptekaLib;
+using Apteka.Services;
 
 namespace Apteka
 {
@@ -10,70 +10,21 @@ namespace Apteka
         private readonly ApiService _api = App.Api;
         public User? EditedUser { get; private set; }
 
-        public UsersPageAdd()
-        {
-            InitializeComponent();
-        }
-
-        public UsersPageAdd(User user) : this()
-        {
-            EditedUser = user;
-            LogTB.Text = user.Login;
-            EmailOrPhoneTB.Text = user.EmailOrPhone;
-            FIOTB.Text = user.FIO;
-            PassTB.Text = "";
-        }
+        public UsersPageAdd() { InitializeComponent(); }
+        public UsersPageAdd(User user) : this() { EditedUser = user; LogTB.Text = user.Login; FIOTB.Text = user.FIO; EmailOrPhoneTB.Text = user.EmailOrPhone; PassTB.Text = ""; }
 
         private async void Button_Click(object sender, RoutedEventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(LogTB.Text) || string.IsNullOrWhiteSpace(PassTB.Text))
-            {
-                MessageBox.Show("Логин и пароль обязательны", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
-
+            if (string.IsNullOrWhiteSpace(LogTB.Text) || string.IsNullOrWhiteSpace(PassTB.Text)) { MessageBox.Show("Логин и пароль обязательны"); return; }
             try
             {
-                if (EditedUser == null)
-                {
-                    var newUser = new User
-                    {
-                        Login = LogTB.Text.Trim(),
-                        PasswordHash = PassTB.Text, 
-                        EmailOrPhone = EmailOrPhoneTB.Text.Trim(),
-                        FIO = FIOTB.Text.Trim(),
-                        DateOfCreate = DateTime.Now
-                    };
-
-                    var success = await _api.RegisterAsync(newUser);
-                    if (success)
-                        DialogResult = true;
-                    else
-                        MessageBox.Show("Ошибка при создании пользователя", "Ошибка");
-                }
-                else
-                {
-                    EditedUser.FIO = FIOTB.Text.Trim();
-                    EditedUser.EmailOrPhone = EmailOrPhoneTB.Text.Trim();
-                    if (!string.IsNullOrWhiteSpace(PassTB.Text))
-                        EditedUser.PasswordHash = PassTB.Text;
-
-                    var success = await _api.UpdateUserAsync(EditedUser);
-                    if (success)
-                        DialogResult = true;
-                    else
-                        MessageBox.Show("Ошибка при обновлении", "Ошибка");
-                }
+                var user = new User { Login = LogTB.Text.Trim(), PasswordHash = PassTB.Text, FIO = FIOTB.Text.Trim(), EmailOrPhone = EmailOrPhoneTB.Text.Trim() };
+                bool ok = EditedUser == null ? await _api.RegisterAsync(user) : await _api.UpdateUserAsync(new User { Id = EditedUser.Id, Login = user.Login, PasswordHash = user.PasswordHash, FIO = user.FIO, EmailOrPhone = user.EmailOrPhone });
+                if (ok) DialogResult = true;
+                else MessageBox.Show("Ошибка сохранения");
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Ошибка: {ex.Message}", "Ошибка");
-            }
+            catch (Exception ex) { MessageBox.Show(ex.Message); }
         }
-
-        private void RegBtn_Click(object sender, RoutedEventArgs e)
-        {
-            DialogResult = false;
-        }
+        private void RegBtn_Click(object sender, RoutedEventArgs e) => DialogResult = false;
     }
 }

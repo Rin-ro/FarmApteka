@@ -1,6 +1,7 @@
-﻿using System.Windows;
-using System.Windows.Controls;
+﻿using System;
 using System.Collections.ObjectModel;
+using System.Windows;
+using System.Windows.Controls;
 using AptekaLib;
 using Apteka.Services;
 
@@ -10,27 +11,14 @@ namespace Apteka
     {
         private readonly ApiService _api = App.Api;
         public ObservableCollection<Medicine> Medicines { get; } = new();
-
         public MedicinesPage()
         {
             InitializeComponent();
             DataContext = this;
             LoadMedicines();
         }
-
-        private async void LoadMedicines()
-        {
-            try
-            {
-                var list = await _api.GetMedicinesAsync();
-                Medicines.Clear();
-                foreach (var m in list)
-                    Medicines.Add(m);
-            }
-            catch (System.Exception ex)
-            {
-                MessageBox.Show($"Ошибка: {ex.Message}");
-            }
-        }
+        private async void LoadMedicines() { try { var list = await _api.GetMedicinesAsync(); Medicines.Clear(); foreach (var m in list) Medicines.Add(m); } catch (Exception ex) { MessageBox.Show($"Ошибка: {ex.Message}"); } }
+        public object? GetSelectedItem() => medicinesDataTable.SelectedItem;
+        public void Refresh() => LoadMedicines();
     }
 }

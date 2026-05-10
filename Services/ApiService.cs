@@ -2,9 +2,9 @@
 using System;
 using System.Collections.Generic;
 using System.Configuration;
-using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace Apteka.Services
@@ -12,420 +12,109 @@ namespace Apteka.Services
     public class ApiService
     {
         private readonly HttpClient _http;
-        private readonly string _baseUrl;
+        private static readonly JsonSerializerOptions _jsonOptions = new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true,
+            Converters = { new TimeSpanConverter() }
+        };
 
         public ApiService()
         {
-            _baseUrl = ConfigurationManager.AppSettings["ApiBaseUrl"] ?? "http://localhost:5000/api";
-            _http = new HttpClient { BaseAddress = new Uri(_baseUrl) };
+            string baseUrl = ConfigurationManager.AppSettings["ApiBaseUrl"] ?? "http://localhost:5000/api/";
+            if (!baseUrl.EndsWith("/")) baseUrl += "/";
+            _http = new HttpClient { BaseAddress = new Uri(baseUrl) };
             _http.DefaultRequestHeaders.Add("Accept", "application/json");
         }
 
-        // ==========================================
-        // 🔐 АВТОРИЗАЦИЯ
-        // ==========================================
-        public async Task<List<OrderPosition>> GetOrderPositionsAsync()
-        {
-            try { return await _http.GetFromJsonAsync<List<OrderPosition>>("orderpositions") ?? new(); }
-            catch { return new(); }
-        }
-
-        public async Task<bool> AddOrderPositionAsync(OrderPosition pos)
-        {
-            try { var resp = await _http.PostAsJsonAsync("orderpositions", pos); return resp.IsSuccessStatusCode; }
-            catch { return false; }
-        }
-
-        public async Task<bool> UpdateOrderPositionAsync(OrderPosition pos)
-        {
-            try { var resp = await _http.PutAsJsonAsync($"orderpositions/{pos.Id}", pos); return resp.IsSuccessStatusCode; }
-            catch { return false; }
-        }
-
-        public async Task<bool> DeleteOrderPositionAsync(int id)
-        {
-            try { var resp = await _http.DeleteAsync($"orderpositions/{id}"); return resp.IsSuccessStatusCode; }
-            catch { return false; }
-        }
-
-        // УВЕДОМЛЕНИЯ (добавление/обновление)
-        public async Task<bool> AddNotificationAsync(Notification notif)
-        {
-            try { var resp = await _http.PostAsJsonAsync("notifications", notif); return resp.IsSuccessStatusCode; }
-            catch { return false; }
-        }
-
-        public async Task<bool> UpdateNotificationAsync(Notification notif)
-        {
-            try { var resp = await _http.PutAsJsonAsync($"notifications/{notif.Id}", notif); return resp.IsSuccessStatusCode; }
-            catch { return false; }
-        }
-
-        // ВСЕ ЗАКАЗЫ (для администратора)
-        public async Task<List<Order>> GetAllOrdersAsync()
-        {
-            try { return await _http.GetFromJsonAsync<List<Order>>("orders") ?? new(); }
-            catch { return new(); }
-        }
-        public async Task<AuthResult?> LoginAsync(string login, string password)
+        // ────────────── Вспомогательные методы ──────────────
+        private async Task<List<T>> GetListAsync<T>(string url)
         {
             try
             {
-                var payload = new { login, password };
-                var response = await _http.PostAsJsonAsync("users/login", payload);
-                return response.IsSuccessStatusCode
-                    ? await response.Content.ReadFromJsonAsync<AuthResult>()
-                    : null;
+                var response = await _http.GetAsync(url);
+                if (!response.IsSuccessStatusCode) return new List<T>();
+                var json = await response.Content.ReadAsStringAsync();
+                return JsonSerializer.Deserialize<List<T>>(json, _jsonOptions) ?? new List<T>();
             }
-            catch { return null; }
+            catch { return new List<T>(); }
         }
+
+        private async Task<bool> DeleteAsync(string url)
+        {
+            try { var r = await _http.DeleteAsync(url); return r.IsSuccessStatusCode; }
+            catch { return false; }
+        }
+
+        // ────────────── ПОЛЬЗОВАТЕЛИ ──────────────
+        public Task<List<User>> GetUsersAsync() => GetListAsync<User>("users");
+        public async Task<User?> GetUserByIdAsync(int id) { try { return await _http.GetFromJsonAsync<User>($"users/{id}", _jsonOptions); } catch { return null; } }
 
         public async Task<bool> RegisterAsync(User user)
         {
             try
             {
-                var response = await _http.PostAsJsonAsync("users/register", user);
-                return response.IsSuccessStatusCode;
+                var payload = new { login = user.Login, password = user.PasswordHash, emailOrPhone = user.EmailOrPhone, fio = user.FIO };
+                var resp = await _http.PostAsJsonAsync("users/register", payload);
+                return resp.IsSuccessStatusCode;
             }
             catch { return false; }
-        }
-
-        // ==========================================
-        // 👤 ПОЛЬЗОВАТЕЛИ
-        // ==========================================
-
-        public async Task<User?> GetUserByIdAsync(int id)
-        {
-            try { return await _http.GetFromJsonAsync<User>($"users/{id}"); }
-            catch { return null; }
-        }
-
-        public async Task<List<User>> GetUsersAsync()
-        {
-            try { return await _http.GetFromJsonAsync<List<User>>("users") ?? new List<User>(); }
-            catch { return new List<User>(); }
         }
 
         public async Task<bool> UpdateUserAsync(User user)
         {
             try
             {
-                var response = await _http.PutAsJsonAsync($"users/{user.Id}", user);
-                return response.IsSuccessStatusCode;
+                var payload = new { fio = user.FIO, emailOrPhone = user.EmailOrPhone, newPassword = user.PasswordHash };
+                var resp = await _http.PutAsJsonAsync($"users/{user.Id}", payload);
+                return resp.IsSuccessStatusCode;
             }
             catch { return false; }
         }
 
-        public async Task<bool> DeleteUserAsync(int id)
-        {
-            try
-            {
-                var response = await _http.DeleteAsync($"users/{id}");
-                return response.IsSuccessStatusCode;
-            }
-            catch { return false; }
-        }
+        public Task<bool> DeleteUserAsync(int id) => DeleteAsync($"users/{id}");
 
-        // ==========================================
-        // 📂 КАТЕГОРИИ
-        // ==========================================
+        // ────────────── КАТЕГОРИИ ──────────────
+        public Task<List<Category>> GetCategoriesAsync() => GetListAsync<Category>("categories");
+        public async Task<bool> AddCategoryAsync(Category cat) { try { var r = await _http.PostAsJsonAsync("categories", cat); return r.IsSuccessStatusCode; } catch { return false; } }
+        public async Task<bool> UpdateCategoryAsync(Category cat) { try { var r = await _http.PutAsJsonAsync($"categories/{cat.Id}", cat); return r.IsSuccessStatusCode; } catch { return false; } }
+        public Task<bool> DeleteCategoryAsync(int id) => DeleteAsync($"categories/{id}");
 
-        public async Task<List<Category>> GetCategoriesAsync()
-        {
-            try { return await _http.GetFromJsonAsync<List<Category>>("categories") ?? new List<Category>(); }
-            catch { return new List<Category>(); }
-        }
+        // ────────────── ЛЕКАРСТВА ──────────────
+        public Task<List<Medicine>> GetMedicinesAsync() => GetListAsync<Medicine>("medicines");
+        public async Task<bool> AddMedicineAsync(Medicine med) { try { var r = await _http.PostAsJsonAsync("medicines", med); return r.IsSuccessStatusCode; } catch { return false; } }
+        public async Task<bool> UpdateMedicineAsync(Medicine med) { try { var r = await _http.PutAsJsonAsync($"medicines/{med.Id}", med); return r.IsSuccessStatusCode; } catch { return false; } }
+        public Task<bool> DeleteMedicineAsync(int id) => DeleteAsync($"medicines/{id}");
 
-        public async Task<bool> AddCategoryAsync(Category category)
-        {
-            try
-            {
-                var response = await _http.PostAsJsonAsync("categories", category);
-                return response.IsSuccessStatusCode;
-            }
-            catch { return false; }
-        }
+        // ────────────── ЗАКАЗЫ ──────────────
+        public Task<List<Order>> GetAllOrdersAsync() => GetListAsync<Order>("orders");
+        public Task<List<Order>> GetUserOrdersAsync(int userId) => GetListAsync<Order>($"orders/user/{userId}");
+        public async Task<Order?> CreateOrderAsync(CreateOrderRequest req) { try { var r = await _http.PostAsJsonAsync("orders", req); return r.IsSuccessStatusCode ? await r.Content.ReadFromJsonAsync<Order>(_jsonOptions) : null; } catch { return null; } }
+        public Task<bool> CancelOrderAsync(int id) => DeleteAsync($"orders/{id}");
+        public async Task<bool> UpdateOrderStatusAsync(int id, string status) { try { var r = await _http.PutAsJsonAsync($"orders/{id}/status", new { status }); return r.IsSuccessStatusCode; } catch { return false; } }
 
-        public async Task<bool> UpdateCategoryAsync(Category category)
-        {
-            try
-            {
-                var response = await _http.PutAsJsonAsync($"categories/{category.Id}", category);
-                return response.IsSuccessStatusCode;
-            }
-            catch { return false; }
-        }
+        // ────────────── ПОЗИЦИИ ЗАКАЗОВ ──────────────
+        public Task<List<OrderPosition>> GetOrderPositionsAsync() => GetListAsync<OrderPosition>("orderpositions");
+        public async Task<bool> AddOrderPositionAsync(OrderPosition pos) { try { var r = await _http.PostAsJsonAsync("orderpositions", pos); return r.IsSuccessStatusCode; } catch { return false; } }
+        public async Task<bool> UpdateOrderPositionAsync(OrderPosition pos) { try { var r = await _http.PutAsJsonAsync($"orderpositions/{pos.Id}", pos); return r.IsSuccessStatusCode; } catch { return false; } }
+        public Task<bool> DeleteOrderPositionAsync(int id) => DeleteAsync($"orderpositions/{id}");
 
-        public async Task<bool> DeleteCategoryAsync(int id)
-        {
-            try
-            {
-                var response = await _http.DeleteAsync($"categories/{id}");
-                return response.IsSuccessStatusCode;
-            }
-            catch { return false; }
-        }
+        // ────────────── УВЕДОМЛЕНИЯ ──────────────
+        public Task<List<Notification>> GetUserNotificationsAsync(int userId, bool unreadOnly = false) =>
+            GetListAsync<Notification>($"notifications/user/{userId}?unreadOnly={unreadOnly}");
+        public async Task<bool> AddNotificationAsync(Notification n) { try { var r = await _http.PostAsJsonAsync("notifications", n); return r.IsSuccessStatusCode; } catch { return false; } }
+        public async Task<bool> UpdateNotificationAsync(Notification n) { try { var r = await _http.PutAsJsonAsync($"notifications/{n.Id}", n); return r.IsSuccessStatusCode; } catch { return false; } }
+        public Task<bool> DeleteNotificationAsync(int id) => DeleteAsync($"notifications/{id}");
 
-        // ==========================================
-        // 💊 ЛЕКАРСТВА
-        // ==========================================
-
-        public async Task<List<Medicine>> GetMedicinesAsync()
-        {
-            try { return await _http.GetFromJsonAsync<List<Medicine>>("medicines") ?? new List<Medicine>(); }
-            catch { return new List<Medicine>(); }
-        }
-
-        public async Task<Medicine?> GetMedicineByIdAsync(int id)
-        {
-            try { return await _http.GetFromJsonAsync<Medicine>($"medicines/{id}"); }
-            catch { return null; }
-        }
-
-        public async Task<List<Medicine>> GetMedicinesByCategoryAsync(int categoryId)
-        {
-            try { return await _http.GetFromJsonAsync<List<Medicine>>($"medicines/category/{categoryId}") ?? new List<Medicine>(); }
-            catch { return new List<Medicine>(); }
-        }
-
-        public async Task<List<Medicine>> SearchMedicinesAsync(string query)
-        {
-            try { return await _http.GetFromJsonAsync<List<Medicine>>($"medicines/search?query={query}") ?? new List<Medicine>(); }
-            catch { return new List<Medicine>(); }
-        }
-
-        public async Task<List<Medicine>> GetLowStockMedicinesAsync(int threshold = 10)
-        {
-            try { return await _http.GetFromJsonAsync<List<Medicine>>($"medicines/low-stock?threshold={threshold}") ?? new List<Medicine>(); }
-            catch { return new List<Medicine>(); }
-        }
-
-        public async Task<bool> AddMedicineAsync(Medicine medicine)
-        {
-            try
-            {
-                var response = await _http.PostAsJsonAsync("medicines", medicine);
-                return response.IsSuccessStatusCode;
-            }
-            catch { return false; }
-        }
-
-        public async Task<bool> UpdateMedicineAsync(Medicine medicine)
-        {
-            try
-            {
-                var response = await _http.PutAsJsonAsync($"medicines/{medicine.Id}", medicine);
-                return response.IsSuccessStatusCode;
-            }
-            catch { return false; }
-        }
-
-        public async Task<bool> DeleteMedicineAsync(int id)
-        {
-            try
-            {
-                var response = await _http.DeleteAsync($"medicines/{id}");
-                return response.IsSuccessStatusCode;
-            }
-            catch { return false; }
-        }
-
-        // ==========================================
-        // 🛒 КОРЗИНА (по ТЗ: Element of Cart)
-        // ==========================================
-
-        public async Task<List<CartItem>> GetCartAsync(int userId)
-        {
-            try { return await _http.GetFromJsonAsync<List<CartItem>>($"cart/{userId}") ?? new List<CartItem>(); }
-            catch { return new List<CartItem>(); }
-        }
-
-        public async Task<bool> AddToCartAsync(int userId, int medicineId, int quantity = 1)
-        {
-            try
-            {
-                var payload = new { UserId = userId, MedicineId = medicineId, Quantity = quantity };
-                var response = await _http.PostAsJsonAsync("cart/add", payload);
-                return response.IsSuccessStatusCode;
-            }
-            catch { return false; }
-        }
-
-        public async Task<bool> UpdateCartItemAsync(int userId, int medicineId, int quantity)
-        {
-            try
-            {
-                var payload = new { UserId = userId, MedicineId = medicineId, Quantity = quantity };
-                var response = await _http.PutAsJsonAsync("cart/update", payload);
-                return response.IsSuccessStatusCode;
-            }
-            catch { return false; }
-        }
-
-        public async Task<bool> RemoveFromCartAsync(int userId, int medicineId)
-        {
-            try
-            {
-                var response = await _http.DeleteAsync($"cart/remove/{userId}/{medicineId}");
-                return response.IsSuccessStatusCode;
-            }
-            catch { return false; }
-        }
-
-        public async Task<bool> ClearCartAsync(int userId)
-        {
-            try
-            {
-                var response = await _http.DeleteAsync($"cart/clear/{userId}");
-                return response.IsSuccessStatusCode;
-            }
-            catch { return false; }
-        }
-
-        // ==========================================
-        // 📦 ЗАКАЗЫ
-        // ==========================================
-
-        public async Task<List<Order>> GetUserOrdersAsync(int userId)
-        {
-            try { return await _http.GetFromJsonAsync<List<Order>>($"orders/user/{userId}") ?? new List<Order>(); }
-            catch { return new List<Order>(); }
-        }
-
-        public async Task<OrderDetails?> GetOrderDetailsAsync(int orderId)
-        {
-            try { return await _http.GetFromJsonAsync<OrderDetails>($"orders/{orderId}/details"); }
-            catch { return null; }
-        }
-
-        public async Task<Order?> CreateOrderAsync(CreateOrderRequest request)
-        {
-            try
-            {
-                var response = await _http.PostAsJsonAsync("orders", request);
-                return response.IsSuccessStatusCode
-                    ? await response.Content.ReadFromJsonAsync<Order>()
-                    : null;
-            }
-            catch { return null; }
-        }
-
-        public async Task<bool> RepeatOrderAsync(int orderId)
-        {
-            try
-            {
-                var response = await _http.PostAsync($"orders/{orderId}/repeat", null);
-                return response.IsSuccessStatusCode;
-            }
-            catch { return false; }
-        }
-
-        public async Task<bool> CancelOrderAsync(int orderId)
-        {
-            try
-            {
-                var response = await _http.DeleteAsync($"orders/{orderId}");
-                return response.IsSuccessStatusCode;
-            }
-            catch { return false; }
-        }
-
-        // ==========================================
-        // 🔔 УВЕДОМЛЕНИЯ (по ТЗ: read_date вместо is_read)
-        // ==========================================
-
-        public async Task<List<Notification>> GetUserNotificationsAsync(int userId, bool unreadOnly = false)
-        {
-            try
-            {
-                var url = unreadOnly
-                    ? $"notifications/user/{userId}?unreadOnly=true"
-                    : $"notifications/user/{userId}";
-                return await _http.GetFromJsonAsync<List<Notification>>(url) ?? new List<Notification>();
-            }
-            catch { return new List<Notification>(); }
-        }
-
-        public async Task<bool> MarkNotificationAsReadAsync(int notificationId)
-        {
-            try
-            {
-                var response = await _http.PutAsync($"notifications/{notificationId}/read", null);
-                return response.IsSuccessStatusCode;
-            }
-            catch { return false; }
-        }
-
-        public async Task<bool> MarkNotificationAsUnreadAsync(int notificationId)
-        {
-            try
-            {
-                var response = await _http.PutAsync($"notifications/{notificationId}/unread", null);
-                return response.IsSuccessStatusCode;
-            }
-            catch { return false; }
-        }
-
-        public async Task<bool> DeleteNotificationAsync(int notificationId)
-        {
-            try
-            {
-                var response = await _http.DeleteAsync($"notifications/{notificationId}");
-                return response.IsSuccessStatusCode;
-            }
-            catch { return false; }
-        }
-
+        public async Task<bool> MarkNotificationReadAsync(int id) { try { var r = await _http.PutAsync($"notifications/{id}/read", null); return r.IsSuccessStatusCode; } catch { return false; } }
+        public async Task<bool> MarkNotificationUnreadAsync(int id) { try { var r = await _http.PutAsync($"notifications/{id}/unread", null); return r.IsSuccessStatusCode; } catch { return false; } }
     }
 
-    // ==========================================
-    // 📦 DTO (классы для передачи данных)
-    // ==========================================
-
-    public class AuthResult
+    public class TimeSpanConverter : System.Text.Json.Serialization.JsonConverter<TimeSpan>
     {
-        public int UserId { get; set; }
-        public string Token { get; set; } = string.Empty;
-        public string FullName { get; set; } = string.Empty;
+        public override TimeSpan Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) => TimeSpan.Parse(reader.GetString()!);
+        public override void Write(Utf8JsonWriter writer, TimeSpan value, JsonSerializerOptions options) => writer.WriteStringValue(value.ToString());
     }
 
-    public class CreateOrderRequest
-    {
-        public int UserId { get; set; }
-        public string PaymentMethod { get; set; } = "Наличные";
-        public string DeliveryMethod { get; set; } = "Самовывоз";
-        public DateTime? DeliveryDate { get; set; }
-        public List<OrderItemRequest> Items { get; set; } = new();
-    }
-
-    public class OrderItemRequest
-    {
-        public int MedicineId { get; set; }
-        public int Quantity { get; set; }
-    }
-
-    public class OrderDetails
-    {
-        public int Id { get; set; }
-        public int UserId { get; set; }
-        public string UserName { get; set; } = string.Empty;
-        public DateTime DateOfOrder { get; set; }
-        public string Status { get; set; } = string.Empty;
-        public string PaymentMethod { get; set; } = string.Empty;
-        public string DeliveryMethod { get; set; } = string.Empty;
-        public DateTime? DeliveryDate { get; set; }
-        public TimeSpan? DeliveryTime { get; set; }
-        public decimal Sum { get; set; }
-        public List<OrderItemDetails> Items { get; set; } = new();
-    }
-
-    public class OrderItemDetails
-    {
-        public int Id { get; set; }
-        public int MedicineId { get; set; }
-        public string MedicineName { get; set; } = string.Empty;
-        public int Quantity { get; set; }
-        public decimal UnitPrice { get; set; }
-        public decimal Subtotal { get; set; }
-    }
+    public class CreateOrderRequest { public int UserId; public string PaymentMethod = "Наличные"; public string DeliveryMethod = "Самовывоз"; public DateTime? DeliveryDate; public List<OrderItemRequest> Items = new(); }
+    public class OrderItemRequest { public int MedicineId; public int Quantity; }
 }

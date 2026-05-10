@@ -1,7 +1,7 @@
-﻿using Apteka.Services;
-using AptekaLib;
-using System;
+﻿using System;
 using System.Windows;
+using AptekaLib;
+using Apteka.Services;
 
 namespace Apteka
 {
@@ -10,74 +10,31 @@ namespace Apteka
         private readonly ApiService _api = App.Api;
         public Medicine? EditedMedicine { get; private set; }
 
-        public MedicinesPageAdd()
-        {
-            InitializeComponent();
-            LoadCategories();
-        }
+        public MedicinesPageAdd() { InitializeComponent(); LoadCategories(); }
+        public MedicinesPageAdd(Medicine med) : this() { EditedMedicine = med; NameTB.Text = med.Name; DescTB.Text = med.Description; ManufacturerTB.Text = med.Fabricator; PriceTB.Text = med.Price.ToString(); ExpirationTB.Text = med.ExpirationDate?.ToString("yyyy-MM-dd"); FormTB.Text = med.FormOfRelease; CategoryTB.Text = med.CategoryId.ToString(); StockTB.Text = med.TheRestOfTheLayout.ToString(); PrescriptionTB.IsChecked = med.Prescription; }
 
-        public MedicinesPageAdd(Medicine medicine) : this()
-        {
-            EditedMedicine = medicine;
-            NameTB.Text = medicine.Name;
-            DescTB.Text = medicine.Description;
-            ManufacturerTB.Text = medicine.Fabricator;
-            PriceTB.Text = medicine.Price.ToString();
-            ExpirationTB.Text = medicine.ExpirationDate.ToString();
-            FormTB.Text = medicine.FormOfRelease;
-            StockTB.Text = medicine.TheRestOfTheLayout.ToString();
-            CategoryTB.Text = medicine.CategoryId.ToString();
-            PrescriptionTB.IsChecked = medicine.Prescription;
-        }
-
-        private async void LoadCategories()
-        {
-            var categories = await _api.GetCategoriesAsync();
-            // Можно заполнить ComboBox
-        }
-
+        private async void LoadCategories() { /* можно загрузить категории для выбора */ }
         private async void Button_Click(object sender, RoutedEventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(NameTB.Text) || !decimal.TryParse(PriceTB.Text, out var price))
+            if (!decimal.TryParse(PriceTB.Text, out var price)) { MessageBox.Show("Некорректная цена"); return; }
+            int catId = int.TryParse(CategoryTB.Text, out var cid) ? cid : 1;
+            int stock = int.TryParse(StockTB.Text, out var st) ? st : 0;
+            var med = new Medicine
             {
-                MessageBox.Show("Заполните название и цену", "Ошибка");
-                return;
-            }
-
-            try
-            {
-                var medicine = new Medicine
-                {
-                    Id = EditedMedicine?.Id ?? 0,
-                    Name = NameTB.Text.Trim(),
-                    Description = DescTB.Text.Trim(),
-                    Fabricator = ManufacturerTB.Text.Trim(),
-                    Price = price,
-                    ExpirationDate = DateTime.TryParse(ExpirationTB.Text, out var expDate) ? expDate : DateTime.Now.AddYears(1),
-                    FormOfRelease = FormTB.Text.Trim(),
-                    CategoryId = int.TryParse(CategoryTB.Text, out var cat) ? cat : 1,
-                    TheRestOfTheLayout = int.TryParse(StockTB.Text, out var stock) ? stock : 0,
-                    Prescription = PrescriptionTB.IsChecked ?? false
-                };
-
-                bool success = EditedMedicine == null
-                    ? await _api.AddMedicineAsync(medicine)
-                    : await _api.UpdateMedicineAsync(medicine);
-
-                if (success)
-                    DialogResult = true;
-                else
-                    MessageBox.Show("Ошибка при сохранении", "Ошибка");
-            }
-            catch (System.Exception ex)
-            {
-                MessageBox.Show($"Ошибка: {ex.Message}");
-            }
+                Name = NameTB.Text.Trim(),
+                Description = DescTB.Text.Trim(),
+                Fabricator = ManufacturerTB.Text.Trim(),
+                Price = price,
+                ExpirationDate = DateTime.TryParse(ExpirationTB.Text, out var exp) ? exp : null,
+                FormOfRelease = FormTB.Text.Trim(),
+                CategoryId = catId,
+                TheRestOfTheLayout = stock,
+                Prescription = PrescriptionTB.IsChecked == true
+            };
+            if (EditedMedicine != null) med.Id = EditedMedicine.Id;
+            bool ok = EditedMedicine == null ? await _api.AddMedicineAsync(med) : await _api.UpdateMedicineAsync(med);
+            if (ok) DialogResult = true; else MessageBox.Show("Ошибка сохранения");
         }
-
-        private void RegBtn_Click(object sender, RoutedEventArgs e)
-        {
-            DialogResult = false;
-        }
+        private void RegBtn_Click(object sender, RoutedEventArgs e) => DialogResult = false;
     }
 }
